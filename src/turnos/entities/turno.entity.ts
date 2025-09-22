@@ -10,11 +10,18 @@ export class Turno {
   public id_turno: number;
 
   @Column({
-    name: 'diahora',
-    type: 'datetime',
+    name: 'dia',
+    type: 'varchar',
+    nullable: false,
   })
-  public diahora: Date;
+  public dia: string;
 
+  @Column({
+    name: 'hora',
+    type: 'varchar',
+    nullable: false,
+  })
+  public hora: string;
 
   @ManyToOne(() => Mascota, (mascota) => mascota.turnos)
   public mascota: Mascota;
@@ -22,8 +29,9 @@ export class Turno {
   @ManyToOne(() => Peluquera, (peluquera) => peluquera.turnos)
   public peluquera: Peluquera;
 
-  constructor(diahora:Date) {
-    this.diahora = diahora;
+  constructor(dia: string, hora: string) {
+    this.dia = dia;
+    this.hora = hora;
   }
 
 

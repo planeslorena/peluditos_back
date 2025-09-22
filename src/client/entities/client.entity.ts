@@ -3,11 +3,11 @@ import { Mascota } from './mascota.entity';
 
 @Entity('clientes')
 export class Cliente {
-    @Column({
-        primary: true,
-        nullable: false,
-      })
-      public dni: number;
+  @Column({
+    primary: true,
+    nullable: false,
+  })
+  public dni: number;
 
   @Column({
     name: 'nombre',
@@ -33,7 +33,7 @@ export class Cliente {
   @OneToMany(() => Mascota, (mascota) => mascota.duenio)
   public mascotas: Mascota[];
 
-  constructor(dni:number, nombre: string, mail:string, telefono:number) {
+  constructor(dni: number, nombre: string, mail: string, telefono: number) {
     this.dni = dni;
     this.nombre = nombre;
     this.mail = mail;

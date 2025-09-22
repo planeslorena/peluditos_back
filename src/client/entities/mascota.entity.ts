@@ -39,54 +39,64 @@ export class Mascota {
   public castrado: boolean;
 
   @Column({
+    name: 'desparacitado',
+    type: 'boolean',
+    nullable: false,
+  })
+  public desparasitado: boolean;
+
+  @Column({
     name: 'veterinario',
     type: 'varchar',
     length: 30,
+    nullable: true
   })
   public veterinario: string;
 
   @Column({
     name: 'tel_veterinario',
-    type: 'int',
+    type: 'bigint',
+    nullable: true
   })
   public tel_veterinario: number;
 
   @Column({
-    name: 'desparacitario',
-    type: 'datetime',
+    name: 'direccion_veterinario',
+    type: 'varchar',
+    length: 100,
+    nullable: true
   })
-  public desparacitario: Date;
+  public direccion_veterinario: string;
 
   @Column({
-    name: 'pipeta',
-    type: 'datetime',
+    name: 'sextuple',
+    type: 'varchar',
+    length: 7,
+    nullable: true
   })
-  public pipeta: Date;
-
-  @Column({
-    name: 'sectuple',
-    type: 'datetime',
-  })
-  public sectuple: Date;
+  public sextuple: string;
 
   @Column({
     name: 'antirabica',
-    type: 'datetime',
+    type: 'varchar',
+    length: 7,
+    nullable: true
   })
-  public antirabica: Date;
+  public antirabica: string;
 
   @Column({
     name: 'shampoo',
     type: 'varchar',
     length: 50,
+    nullable: true
   })
   public shampoo: string;
 
   @Column({
     name: 'observaciones',
-
     type: 'varchar',
     length: 200,
+    nullable: true
   })
   public observaciones: string;
 
@@ -102,6 +112,4 @@ export class Mascota {
     this.raza = raza;
     this.castrado = castrado;
   }
-
-
 }

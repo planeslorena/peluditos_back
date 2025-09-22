@@ -2,24 +2,36 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { Mascota } from './entities/mascota.entity';
 
 @Controller('client')
 export class ClientController {
-  constructor(private readonly clientService: ClientService) {}
+  constructor(private readonly clientService: ClientService) { }
+
+  //Trae los datos del cliente por DNI
+  @Post('/login')
+  async login(@Body() body: {dni: number}) {
+    return this.clientService.getClientbyDni(body.dni);
+  }
+
+  @Get('/mascotas/:dni')
+  async getMascotas(@Param('dni') dni: string) {
+    return this.clientService.getMascotasByClientDni(+dni);
+  }
 
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
+  async create(@Body() createClientDto: CreateClientDto) {
     return this.clientService.create(createClientDto);
   }
 
+  @Post('/mascotas')
+  async createMascota(@Body() mascota: Mascota) {
+    return this.clientService.createMascota(mascota);
+  }
+/*
   @Get()
   findAll() {
     return this.clientService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientService.findOne(+id);
   }
 
   @Patch(':id')
@@ -30,5 +42,5 @@ export class ClientController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.clientService.remove(+id);
-  }
+  }*/
 }
