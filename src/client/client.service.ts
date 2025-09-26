@@ -54,12 +54,6 @@ export class ClientService {
 
   async getClientbyDni(dni: number) {
 
-    const criterio: FindManyOptions<Cliente> = {
-
-      // relations: {
-      //   mascotas: true
-      // },
-    };
     const cliente = await this.clienteRepository.findOneBy({ dni: dni, },);
 
     return cliente;

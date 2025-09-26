@@ -1,17 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TurnosService } from './turnos.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
+import { Turno } from './entities/turno.entity';
 
 @Controller('turnos')
 export class TurnosController {
-  constructor(private readonly turnosService: TurnosService) {}
+  constructor(private readonly turnosService: TurnosService) { }
 
-  @Post()
-  create(@Body() createTurnoDto: CreateTurnoDto) {
-    return this.turnosService.create(createTurnoDto);
+  @Get('/turnosDisponibles')
+  async getTurnosDisponibles(
+    @Query('day') day: string,
+  ) {
+    return this.turnosService.getTurnosDisponibles(day);
   }
 
+  @Get('/diasNoDisponibles')
+  async getDiasNoDisponibles(
+    @Query('day') day: string,
+  ) {
+    return this.turnosService.getDiasNoDisponibles(day);
+  }
+
+  @Post()
+  create(@Body() newTurno: Turno) {
+    return this.turnosService.create(newTurno);
+  }
+
+
+
+  /*
   @Get()
   findAll() {
     return this.turnosService.findAll();
@@ -30,5 +48,5 @@ export class TurnosController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.turnosService.remove(+id);
-  }
+  }*/
 }

@@ -22,11 +22,11 @@ export class AdminController {
     return this.adminService.findOne(+id);
   }*/
 
-  @Get('/turnosDisponibles')
-  async getAvailableTimes(
-    @Query('day') day: string,
-  ) {
-    return this.adminService.getTurnosDisponibles(day);
+
+
+  @Get('/razas')
+  async getAllRazas() {
+    return this.adminService.getAllRazas();
   }
 
  /* @Patch(':id')

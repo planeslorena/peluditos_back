@@ -7,6 +7,7 @@ import { Horario } from './entities/horarios.entity';
 import { Repository } from 'typeorm';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import * as moment from 'moment';
+import { Raza } from './entities/razas.entity';
 
 @Injectable()
 export class AdminService {
@@ -16,8 +17,8 @@ export class AdminService {
     private readonly peluqueraRepository: Repository<Peluquera>,
     @InjectRepository(Horario)
     private readonly horarioRepository: Repository<Horario>,
-    @InjectRepository(Turno)
-    private readonly turnoRepository: Repository<Turno>,
+    @InjectRepository(Raza)
+    private readonly razaRepository: Repository<Raza>,
   ) { }
   /*create(createAdminDto: CreateAdminDto) {
     return 'This action adds a new admin';
@@ -39,31 +40,9 @@ export class AdminService {
     return `This action removes a #${id} admin`;
   }*/
 
-  async getTurnosDisponibles(day: string): Promise<Horario[]> {
-    // 0 (Domingo) a 6 (Sábado)
-    const diaDeLaSemana = moment(day, 'YYYY-MM-DD').day();
-    
-    //Traer los horarios de las peluqueras para el día de la semana especificado
-    const horarios = await this.horarioRepository.find({
-      where: { dia: diaDeLaSemana },
-      relations: ['peluquera'],  
-      order: { horario: 'ASC' }
-    });
-
-    //Traer los turnos ya ocupados para el día especificado
-    const turnosOcupados = await this.turnoRepository.find({
-      where: { dia: day },
-      relations: ['peluquera']  
-    });
-
-    //Filtra los horarios ya ocupados para cada peluquera y asi obtiene los turnos disponibles
-    const turnosDisponibles = horarios.filter(horario => {
-      return !turnosOcupados.some(turno => {
-        return turno.hora === horario.horario && turno.peluquera.id_peluquera === horario.peluquera.id_peluquera;
-      });
-    });
-
-    return turnosDisponibles;
+  async getAllRazas(): Promise<Raza[]> {
+    const razas = await this.razaRepository.find();
+    return razas;
   }
 }
 

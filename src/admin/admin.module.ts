@@ -5,9 +5,10 @@ import { Turno } from 'src/turnos/entities/turno.entity';
 import { Horario } from './entities/horarios.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Peluquera } from './entities/peluquera.entity';
+import { Raza } from './entities/razas.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Peluquera, Horario, Turno])],
+  imports: [TypeOrmModule.forFeature([Peluquera, Horario, Turno, Raza])],
   controllers: [AdminController],
   providers: [AdminService],
   exports: [AdminService],
