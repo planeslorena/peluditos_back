@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ClientModule } from './client/client.module';
 import { TurnosModule } from './turnos/turnos.module';
 import { AdminModule } from './admin/admin.module';
+import { WhatsappModule } from './services/whatsapp.module';
 
 
 @Module({
@@ -25,7 +26,7 @@ import { AdminModule } from './admin/admin.module';
     ClientModule,
     TurnosModule,
     AdminModule,
-
+    WhatsappModule
   ],
   controllers: [AppController],
   providers: [AppService],
