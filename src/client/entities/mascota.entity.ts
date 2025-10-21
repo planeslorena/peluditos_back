@@ -39,7 +39,7 @@ export class Mascota {
   public castrado: boolean;
 
   @Column({
-    name: 'desparacitado',
+    name: 'desparasitado',
     type: 'boolean',
     nullable: false,
   })
@@ -77,12 +77,12 @@ export class Mascota {
   public sextuple: string;
 
   @Column({
-    name: 'antirabica',
+    name: 'antirrabica',
     type: 'varchar',
     length: 7,
     nullable: true
   })
-  public antirabica: string;
+  public antirrabica: string;
 
   @Column({
     name: 'shampoo',

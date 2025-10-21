@@ -23,11 +23,11 @@ export class AdminService {
   /*create(createAdminDto: CreateAdminDto) {
     return 'This action adds a new admin';
   }
-
-  findAll() {
-    return `This action returns all admin`;
+*/
+  findAllPeluqueras() {
+    return this.peluqueraRepository.find({ relations: ['horarios'] });
   }
-
+/*
   findOne(id: number) {
     return `This action returns a #${id} admin`;
   }
@@ -44,6 +44,9 @@ export class AdminService {
     const razas = await this.razaRepository.find();
     return razas;
   }
-}
 
-  
+  async getPeluqueraById(id: number): Promise<Peluquera> {
+    const peluquera = await this.peluqueraRepository.findOne({ where: { id_peluquera: id } });
+    return peluquera;
+  }
+}

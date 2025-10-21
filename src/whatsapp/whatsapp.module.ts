@@ -1,10 +1,9 @@
-import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 import { WhatsappService } from "./whatsapp.service";
-import { WhatsappController } from "./whatsapp.controller";
+import { WhatsAppWebhookController } from "./webhook.controller";
 
 @Module({
-  controllers: [WhatsappController],
+  controllers: [ WhatsAppWebhookController],
   providers: [WhatsappService],
   exports: [WhatsappService]
 })

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpStatus } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -12,6 +12,11 @@ export class ClientController {
   @Post('/login')
   async login(@Body() body: {dni: number}) {
     return this.clientService.getClientbyDni(body.dni);
+  }
+
+  @Get('/mascotas')
+  async getAllMascotas() {
+    return this.clientService.getAllMascotas();
   }
 
   @Get('/mascotas/:dni')
@@ -28,17 +33,19 @@ export class ClientController {
   async createMascota(@Body() mascota: Mascota) {
     return this.clientService.createMascota(mascota);
   }
-/*
+
   @Get()
-  findAll() {
-    return this.clientService.findAll();
+  async getAll() {
+    return await this.clientService.getAll();
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientService.update(+id, updateClientDto);
+  @Patch('/mascotas/:id')
+  update(
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST, }),) id: number, 
+    @Body() mascota: Mascota) {
+    return this.clientService.updateMascota(id, mascota);
   }
-
+/*
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.clientService.remove(+id);

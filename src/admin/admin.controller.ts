@@ -11,12 +11,13 @@ export class AdminController {
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminService.create(createAdminDto);
   }
-
-  @Get()
-  findAll() {
-    return this.adminService.findAll();
+*/
+  @Get('/peluqueras')
+  findAllPeluqueras() {
+    return this.adminService.findAllPeluqueras();
   }
 
+  /*
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.adminService.findOne(+id);

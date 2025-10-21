@@ -35,10 +35,6 @@ export class ClientService {
     }
   }
 
-  findAll() {
-    return `This action returns all client`;
-  }
-
   async createMascota(mascota: Mascota) {
     try {
       const nuevaMascota = this.mascotaRepository.create(mascota);
@@ -67,11 +63,49 @@ export class ClientService {
     return mascotas ? mascotas : [];
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async getClientByIdMascota(id_mascota: number): Promise<Mascota> {
+    const mascota = await this.mascotaRepository.findOne({
+      where: { id_mascota: id_mascota },
+      relations: ['duenio'],
+    });
+
+    return mascota ? mascota : null;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async getAll(): Promise<Cliente[]> {
+    try {
+      const clientes = await this.clienteRepository.find();
+      return clientes;
+    } catch (error) {
+      throw new HttpException(
+        `Error trayendo clientes: ${error.sqlMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getAllMascotas(): Promise<Mascota[]> {
+    try {
+      const mascotas = await this.mascotaRepository.find({ relations: ['duenio'] });
+      return mascotas;
+    } catch (error) {
+      throw new HttpException(
+        `Error trayendo mascotas: ${error.sqlMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updateMascota(id: number, mascota: Mascota) {
+    try {
+      await this.mascotaRepository.update(id, mascota);
+      const updatedMascota = await this.mascotaRepository.findOneBy({ id_mascota: id });
+      return updatedMascota;
+    } catch (error) {
+      throw new HttpException(
+        `Error actualizando mascota: ${error.sqlMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

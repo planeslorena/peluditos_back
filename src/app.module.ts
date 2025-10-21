@@ -6,7 +6,9 @@ import { ConfigModule } from '@nestjs/config';
 import { ClientModule } from './client/client.module';
 import { TurnosModule } from './turnos/turnos.module';
 import { AdminModule } from './admin/admin.module';
-import { WhatsappModule } from './services/whatsapp.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { ClientService } from './client/client.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
@@ -23,6 +25,7 @@ import { WhatsappModule } from './services/whatsapp.module';
       entities: ['dist/**/*.entity.js'],
       logging: 'all',
     }),
+    ScheduleModule.forRoot(),
     ClientModule,
     TurnosModule,
     AdminModule,
