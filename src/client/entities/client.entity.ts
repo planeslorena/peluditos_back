@@ -1,11 +1,18 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Mascota } from './mascota.entity';
 
 @Entity('clientes')
 export class Cliente {
+  @PrimaryGeneratedColumn({
+    type: 'int',
+  })
+  public id_cliente: number;
+
   @Column({
-    primary: true,
+    name: 'dni',
+    type: 'bigint',
     nullable: false,
+    unique: true,
   })
   public dni: number;
 

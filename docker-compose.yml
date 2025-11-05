@@ -1,0 +1,55 @@
+services:
+  # 🐶 Backend NestJS
+  backend:
+    build:
+      context: .                      # El Dockerfile está dentro de peluditos_backend
+    container_name: peluditos_back
+    ports:
+      - "8080:8080"                   # Puerto del backend
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root2024
+      - MYSQL_DB=peluditos
+      - WHATSAPP_API_TOKEN=EAAPm6sQ5Qp8BPk4IbihTvpg1nOdB9AKwyzUAGq0Lebc4IolbIcow0iwNe2N21VHTps5kPyDnUaNAxtPTXxKNuBhTRcbtBL1nqa2uDyKYKHqT9GDkSb5TF81ZAfWZCnYLtp1J5ssm98WDngZCIcgczrXq8UMMrxuoLpRmTlIftkVskcd5ZAwBXKyXZCzI7KyS6XgZDZD
+    depends_on:
+      - mysql
+    networks:
+      - pelunet
+
+  # 🌐 Frontend Next.js (servido con Nginx)
+  frontend:
+    build:
+      context: ../peluditos_front     # 👈 carpeta del frontend
+    container_name: peluditos_front
+    ports:
+      - "3000:3000"                       # http://localhost:3000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8080  # 👈 importante: URL interna al backend dentro de Docker
+    depends_on:
+      - backend
+    networks:
+      - pelunet
+
+  # 🗄️ Base de datos MySQL
+  mysql:
+    image: mysql:8
+    container_name: peluditos_mysql
+    restart: always
+    ports:
+      - "3316:3306"                   # Podés acceder localmente con puerto 3316
+    environment:
+      - MYSQL_ROOT_PASSWORD=root2024
+      - MYSQL_DATABASE=peluditos
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - pelunet
+
+volumes:
+  mysql-data:
+
+networks:
+  pelunet:
+    driver: bridge

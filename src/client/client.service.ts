@@ -49,9 +49,7 @@ export class ClientService {
   }
 
   async getClientbyDni(dni: number) {
-
     const cliente = await this.clienteRepository.findOneBy({ dni: dni, },);
-
     return cliente;
   }
 
@@ -74,7 +72,7 @@ export class ClientService {
 
   async getAll(): Promise<Cliente[]> {
     try {
-      const clientes = await this.clienteRepository.find();
+      const clientes = await this.clienteRepository.find({ relations: ['mascotas'] });
       return clientes;
     } catch (error) {
       throw new HttpException(
@@ -106,6 +104,29 @@ export class ClientService {
         `Error actualizando mascota: ${error.sqlMessage}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  async updateCliente(id_cliente: number, cliente: Cliente) {
+    try {
+      await this.clienteRepository.update(id_cliente, cliente);
+      const updatedCliente = await this.clienteRepository.findOneBy({ id_cliente: id_cliente });
+      if (!updatedCliente) {
+        throw new HttpException(
+          `Cliente con id ${id_cliente} no encontrado`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return updatedCliente;
+    } catch (error) {
+      if (error.errno == 1062) {
+        throw new HttpException(
+          'El dni ya esta siendo utilizado por un usuario',
+          HttpStatus.CONFLICT,
+        );
+      } else {
+        throw error;
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, HttpStatus } from '@nestjs/common';
 import { TurnosService } from './turnos.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
@@ -22,31 +22,23 @@ export class TurnosController {
     return this.turnosService.getDiasNoDisponibles(day);
   }
 
+  @Get('/turnosPorDia/:day')
+  async getTurnosPorDia(
+    @Param('day') day: string,
+  ) {
+    return this.turnosService.turnosDelDia(day);
+  }
+
   @Post()
   create(@Body() newTurno: Turno) {
     return this.turnosService.create(newTurno);
   }
 
-
-
-  /*
-  @Get()
-  findAll() {
-    return this.turnosService.findAll();
+  @Delete(':id_turno')
+  async delete(
+    @Param('id_turno', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST, })) id_turno: number): Promise<void> {
+    this.turnosService.delete(id_turno);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.turnosService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTurnoDto: UpdateTurnoDto) {
-    return this.turnosService.update(+id, updateTurnoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.turnosService.remove(+id);
-  }*/
 }

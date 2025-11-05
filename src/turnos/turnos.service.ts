@@ -63,6 +63,7 @@ export class TurnosService {
   //Guarda el turno y envia el mensaje de whatsapp
   async create(newTurno: Turno) {
     try {
+      console.log('Creating turno:', newTurno);
       const turno = {
         ...newTurno,
         dia: moment(newTurno.dia, 'YYYY-MM-DD').format('YYYY-MM-DD'),
@@ -76,8 +77,8 @@ export class TurnosService {
       );
     }
 
+    try {
     const mascotaCliente = await this.clientService.getClientByIdMascota(newTurno.mascota.id_mascota);
-
     const peluquera = await this.adminService.getPeluqueraById(newTurno.peluquera.id_peluquera);
     const newTurnoComplete = {
       ...newTurno,
@@ -93,7 +94,12 @@ export class TurnosService {
       .catch(error => {
         console.error('Error sending WhatsApp message:', error);
       });
-
+    } catch (error) {
+      throw new HttpException(
+        `Turno creado, no se pudo enviar whatsapp: ${error.sqlMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   //Devuelve los turnos del día especificado
@@ -125,20 +131,15 @@ export class TurnosService {
         });
     });
   }
-  /*
-    findAll() {
-      return this.turnosRepository.find();
-    }
   
-    findOne(id: number) {
-      return `This action returns a #${id} turno`;
+  async delete(id_turno: number): Promise<void> {
+    try {
+      await this.turnosRepository.delete(id_turno);
+    } catch (error) {
+      throw new HttpException(
+        `Error eliminando turno: ${error.sqlMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-  
-    update(id: number, updateTurnoDto: UpdateTurnoDto) {
-      return `This action updates a #${id} turno`;
-    }
-  
-    remove(id: number) {
-      return `This action removes a #${id} turno`;
-    }*/
+  }
 }

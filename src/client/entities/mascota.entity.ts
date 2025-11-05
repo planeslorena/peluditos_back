@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Cliente } from './client.entity';
 import { Turno } from 'src/turnos/entities/turno.entity';
 
@@ -99,6 +99,11 @@ export class Mascota {
     nullable: true
   })
   public observaciones: string;
+
+  @DeleteDateColumn(
+    { nullable: true })
+  public deleted_at?: Date;
+
 
   @ManyToOne(() => Cliente, (cliente) => cliente.mascotas)
   public duenio: Cliente;

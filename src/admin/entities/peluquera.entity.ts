@@ -19,6 +19,7 @@ export class Peluquera {
   @Column({
     name: 'dni',
     type: 'int',
+    unique: true,
     nullable: false,
   })
   public dni: number;

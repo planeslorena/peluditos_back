@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Peluquera } from './peluquera.entity';
 
 @Entity('horarios')
@@ -22,10 +22,11 @@ export class Horario {
   public horario: string;
 
   @ManyToOne(() => Peluquera, (peluquera) => peluquera.horarios)
+  @JoinColumn({ name: 'id_peluquera' })
   public peluquera: Peluquera;
 
   constructor(dia: number, horario: string) {
-    this.dia = dia;
+    this.dia = dia; 
     this.horario = horario;
   }
 

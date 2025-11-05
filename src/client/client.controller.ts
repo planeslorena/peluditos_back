@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpStatus } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
 import { Mascota } from './entities/mascota.entity';
+import { Cliente } from './entities/client.entity';
 
 @Controller('client')
 export class ClientController {
@@ -40,10 +40,17 @@ export class ClientController {
   }
 
   @Patch('/mascotas/:id')
-  update(
+  updateMascota(
     @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST, }),) id: number, 
     @Body() mascota: Mascota) {
     return this.clientService.updateMascota(id, mascota);
+  }
+
+   @Patch('/:id_cliente')
+  updateCliente(
+    @Param('id_cliente', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST, }),) id_cliente: number, 
+    @Body() cliente: Cliente) {
+    return this.clientService.updateCliente(id_cliente, cliente);
   }
 /*
   @Delete(':id')
