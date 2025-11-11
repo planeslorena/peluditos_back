@@ -44,6 +44,7 @@ services:
       - MYSQL_DATABASE=peluditos
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./sql/datos_iniciales.sql:/docker-entrypoint-initdb.d/datos_iniciales.sql
     networks:
       - pelunet
 
