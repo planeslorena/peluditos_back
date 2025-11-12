@@ -21,12 +21,14 @@ services:
   # 🌐 Frontend Next.js (servido con Nginx)
   frontend:
     build:
-      context: ../peluditos_front     # 👈 carpeta del frontend
+      context: ../peluditos_front 
+      args:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}      # 👈 carpeta del frontend
     container_name: peluditos_front
     ports:
       - "3000:3000"                       # http://localhost:3000
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8080  # 👈 importante: URL interna al backend dentro de Docker
+      - NODE_ENV=production 
     depends_on:
       - backend
     networks:
