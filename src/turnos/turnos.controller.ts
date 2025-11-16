@@ -15,13 +15,31 @@ export class TurnosController {
     return this.turnosService.getTurnosDisponibles(day);
   }
 
-  @Get('/diasNoDisponibles')
+ /* @Get('/diasNoDisponibles')
   async getDiasNoDisponibles(
     @Query('day') day: string,
   ) {
     return this.turnosService.getDiasNoDisponibles(day);
-  }
+  }*/
 
+  /**
+   * Devuelve todos los días NO disponibles dentro de un rango de fechas.
+   * Query params:
+   * from = 'YYYY-MM-DD'
+   * to   = 'YYYY-MM-DD'
+   */
+  @Get('diasNoDisponibles')
+  async getDiasNoDisponiblesRango(
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ): Promise<string[]> {
+    // Validación básica
+    if (!from || !to) {
+      throw new Error("Debes enviar ?from=YYYY-MM-DD&to=YYYY-MM-DD");
+    }
+    return this.turnosService.getDiasNoDisponiblesRango(from, to);
+  }
+  
   @Get('/turnosPorDia/:day')
   async getTurnosPorDia(
     @Param('day') day: string,

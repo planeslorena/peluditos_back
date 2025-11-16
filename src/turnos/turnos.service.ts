@@ -60,6 +60,26 @@ export class TurnosService {
     return diaNoDisponible;
   }
 
+  async getDiasNoDisponiblesRango(fechaInicio: string, fechaFin: string): Promise<string[]> {
+    const diasNoDisponibles: string[] = [];
+
+    let current = moment(fechaInicio);
+    const end = moment(fechaFin);
+
+    while (current <= end) {
+      const day = current.format('YYYY-MM-DD');
+      const horariosDisponibles = await this.getTurnosDisponibles(day);
+
+      if (horariosDisponibles.length === 0) {
+        diasNoDisponibles.push(day);
+      }
+
+      current = current.add(1, 'day');
+    }
+
+    return diasNoDisponibles;
+  }
+
   //Guarda el turno y envia el mensaje de whatsapp
   async create(newTurno: Turno) {
     try {
@@ -78,22 +98,22 @@ export class TurnosService {
     }
 
     try {
-    const mascotaCliente = await this.clientService.getClientByIdMascota(newTurno.mascota.id_mascota);
-    const peluquera = await this.adminService.getPeluqueraById(newTurno.peluquera.id_peluquera);
-    const newTurnoComplete = {
-      ...newTurno,
-      mascota: mascotaCliente,
-      peluquera: peluquera
-    };
+      const mascotaCliente = await this.clientService.getClientByIdMascota(newTurno.mascota.id_mascota);
+      const peluquera = await this.adminService.getPeluqueraById(newTurno.peluquera.id_peluquera);
+      const newTurnoComplete = {
+        ...newTurno,
+        mascota: mascotaCliente,
+        peluquera: peluquera
+      };
 
-    this.whatsappService.prepareMessage(mascotaCliente, newTurnoComplete)
-      .then(message => this.whatsappService.sendMessage(message))
-      .then(response => {
-        console.log('WhatsApp message sent successfully:', response);
-      })
-      .catch(error => {
-        console.error('Error sending WhatsApp message:', error);
-      });
+      this.whatsappService.prepareMessage(mascotaCliente, newTurnoComplete)
+        .then(message => this.whatsappService.sendMessage(message))
+        .then(response => {
+          console.log('WhatsApp message sent successfully:', response);
+        })
+        .catch(error => {
+          console.error('Error sending WhatsApp message:', error);
+        });
     } catch (error) {
       throw new HttpException(
         `Turno creado, no se pudo enviar whatsapp: ${error.sqlMessage}`,
@@ -118,10 +138,10 @@ export class TurnosService {
     this.logger.log('Tarea de recordatorio de turnos iniciada');
     //Lógica para obtener los turnos del día siguiente
     const tomorrow = moment().add(1, 'day').format('YYYY-MM-DD');
-    const turnos= await this.turnosDelDia(tomorrow);
+    const turnos = await this.turnosDelDia(tomorrow);
     //Enviar recordatorio por cada turno
     turnos.forEach(turno => {
-      this.whatsappService.prepareMessage(turno.mascota, turno)
+      this.whatsappService.prepareMessageRecordatorio(turno.mascota, turno)
         .then(message => this.whatsappService.sendMessage(message))
         .then(response => {
           console.log('WhatsApp message sent successfully:', response);
@@ -131,7 +151,7 @@ export class TurnosService {
         });
     });
   }
-  
+
   async delete(id_turno: number): Promise<void> {
     try {
       await this.turnosRepository.delete(id_turno);
