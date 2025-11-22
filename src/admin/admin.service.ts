@@ -26,7 +26,9 @@ export class AdminService {
   }
 
   async getAllRazas(): Promise<Raza[]> {
-    const razas = await this.razaRepository.find();
+    const razas = await this.razaRepository.find({
+      order: { raza: 'ASC' }
+    });
     return razas;
   }
 
@@ -68,12 +70,12 @@ export class AdminService {
 
   async updatePeluquera(id_peluquera: number, peluquera: Peluquera) {
     try {
-      const datosPeluquera = { 
+      const datosPeluquera = {
         id_peluquera: peluquera.id_peluquera,
         nombre: peluquera.nombre,
         dni: peluquera.dni,
         telefono: peluquera.telefono,
-       };
+      };
 
       await this.peluqueraRepository.update(id_peluquera, datosPeluquera);
       const updatedPeluquera = await this.peluqueraRepository.findOneBy({ id_peluquera: id_peluquera });
