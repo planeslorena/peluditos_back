@@ -9,6 +9,13 @@ export class Mascota {
   })
   public id_mascota: number;
 
+    @Column({
+    name: 'num_mascota',
+    type: 'int',
+    nullable: true,
+  })
+  public num_mascota: number;
+
   @Column({
     name: 'nombre',
     length: 50,
