@@ -28,7 +28,7 @@ export class WhatsappService {
             "to": `54${mascota.duenio.telefono}`,
             "type": "template",
             "template": {
-                "name": "confirmacion_turno",
+                "name": "confirmacion",
                 "language": { "code": "es_ar" },
                 "components": [
                     {
