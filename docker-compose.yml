@@ -2,10 +2,10 @@ services:
   # 🐶 Backend NestJS
   backend:
     build:
-      context: .                      # El Dockerfile está dentro de peluditos_backend
+      context: .
     container_name: peluditos_back
     ports:
-      - "8080:8080"                   # Puerto del backend
+      - "127.0.0.1:8080:8080"   # Ahora solo accesible desde el VPS
     environment:
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
@@ -18,13 +18,13 @@ services:
     networks:
       - pelunet
 
-  # 🌐 Frontend Next.js (servido con Nginx)
+  # 🌐 Frontend Next.js
   frontend:
     build:
-      context: ../peluditos_front 
+      context: ../peluditos_front
     container_name: peluditos_front
     ports:
-      - "3000:3000"                       # http://localhost:3000
+      - "127.0.0.1:3000:3000"   # SOLO nginx accede
     depends_on:
       - backend
     networks:
@@ -36,7 +36,7 @@ services:
     container_name: peluditos_mysql
     restart: always
     ports:
-      - "3316:3306"                   # Podés acceder localmente con puerto 3316
+      - "127.0.0.1:3316:3306"   # SOLO accesible desde localhost
     environment:
       - MYSQL_ROOT_PASSWORD=root2024
       - MYSQL_DATABASE=peluditos
