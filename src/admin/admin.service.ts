@@ -24,7 +24,7 @@ export class AdminService {
   async findAllPeluqueras() {
     return await this.peluqueraRepository.find({ 
       relations: ['horarios'],
-      order: { horarios: { dia: 'ASC', horario: 'ASC' } }
+      order: { id_peluquera: 'ASC', horarios: { dia: 'ASC', horario: 'ASC' } }
     });
   }
 
