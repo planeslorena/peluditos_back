@@ -9,9 +9,10 @@ import { ClientModule } from 'src/client/client.module';
 import { WhatsappModule } from 'src/whatsapp/whatsapp.module';
 import { AdminService } from 'src/admin/admin.service';
 import { AdminModule } from 'src/admin/admin.module';
+import { TurnoDeshabilitado } from './entities/turnosDeshabilitados.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Turno, Horario]), ClientModule, WhatsappModule, AdminModule],
+  imports: [TypeOrmModule.forFeature([Turno, Horario, TurnoDeshabilitado]), ClientModule, WhatsappModule, AdminModule],
   controllers: [TurnosController],
   providers: [TurnosService],
   exports: [TurnosService]

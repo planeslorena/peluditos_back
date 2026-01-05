@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import { Horario } from './horarios.entity';
+import { TurnoDeshabilitado } from 'src/turnos/entities/turnosDeshabilitados.entity';
 
 @Entity('peluqueras')
 export class Peluquera {
@@ -24,14 +25,14 @@ export class Peluquera {
   })
   public dni: number;
 
-    @Column({
+  @Column({
     name: 'telefono',
     type: 'bigint',
     nullable: false,
   })
   public telefono: number;
 
-      @Column({
+  @Column({
     name: 'fecha_nacimiento',
     type: 'date',
     nullable: false,
@@ -43,6 +44,9 @@ export class Peluquera {
 
   @OneToMany(() => Horario, (horario) => horario.peluquera)
   public horarios: Horario[];
+
+  @OneToMany(() => TurnoDeshabilitado, (turnoDeshabilitado) => turnoDeshabilitado.peluquera)
+  public turnosDeshabilitados: TurnoDeshabilitado[];
 
   constructor(nombre: string, dni: number, telefono: number, fecha_nacimiento: Date) {
     this.nombre = nombre;

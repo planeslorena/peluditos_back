@@ -10,6 +10,7 @@ import { ClientService } from 'src/client/client.service';
 import { WhatsappService } from 'src/whatsapp/whatsapp.service';
 import { AdminService } from 'src/admin/admin.service';
 import { Cron } from "@nestjs/schedule";
+import { TurnoDeshabilitado } from './entities/turnosDeshabilitados.entity';
 
 @Injectable()
 export class TurnosService {
@@ -20,6 +21,8 @@ export class TurnosService {
     private turnosRepository: Repository<Turno>,
     @InjectRepository(Horario)
     private horarioRepository: Repository<Horario>,
+    @InjectRepository(TurnoDeshabilitado)
+    private turnoDeshabilitadoRepository: Repository<TurnoDeshabilitado>,
     private readonly clientService: ClientService,
     private readonly whatsappService: WhatsappService,
     private readonly adminService: AdminService,
@@ -44,22 +47,28 @@ export class TurnosService {
     });
 
     //Filtra los horarios ya ocupados para cada peluquera y asi obtiene los turnos disponibles
-    const turnosDisponibles = horarios.filter(horario => {
+    const turnosFiltrados = horarios.filter(horario => {
       return !turnosOcupados.some(turno => {
         return turno.hora === horario.horario && turno.peluquera.id_peluquera === horario.peluquera.id_peluquera;
       });
     });
 
+    //Trae los turnos deshabilitados para el día especificado
+    const turnosDeshabilitados = await this.turnoDeshabilitadoRepository.find({
+      where: { dia: dia },
+      relations: ['peluquera']
+    });
+
+    //Filtra los turnos deshabilitados para cada peluquera
+    const turnosDisponibles = turnosFiltrados.filter(horario => {
+      return !turnosDeshabilitados.some(turnoDeshabilitado => {
+        return turnoDeshabilitado.hora === horario.horario && turnoDeshabilitado.peluquera.id_peluquera === horario.peluquera.id_peluquera;
+      });
+    });
     return turnosDisponibles;
   }
 
-  //Devuelve true si no hay turnos disponibles para el día especificado
-  async getDiasNoDisponibles(day: string): Promise<boolean> {
-    const horariosDisponibles = await this.getTurnosDisponibles(day);
-    const diaNoDisponible = horariosDisponibles.length === 0;
-    return diaNoDisponible;
-  }
-
+  //Devuelve los días NO disponibles dentro de un rango de fechas
   async getDiasNoDisponiblesRango(fechaInicio: string, fechaFin: string): Promise<string[]> {
     const diasNoDisponibles: string[] = [];
 
@@ -83,7 +92,6 @@ export class TurnosService {
   //Guarda el turno y envia el mensaje de whatsapp
   async create(newTurno: Turno) {
     try {
-      console.log('Creating turno:', newTurno);
       const turno = {
         ...newTurno,
         dia: moment(newTurno.dia, 'YYYY-MM-DD').format('YYYY-MM-DD'),
@@ -97,6 +105,8 @@ export class TurnosService {
       );
     }
 
+    //Suspención de envio de whatsapp de confirmación a pedido del cliente (02/01/2026)
+    /*
     try {
       const mascotaCliente = await this.clientService.getClientByIdMascota(newTurno.mascota.id_mascota);
       const peluquera = await this.adminService.getPeluqueraById(newTurno.peluquera.id_peluquera);
@@ -119,7 +129,84 @@ export class TurnosService {
         `Turno creado, no se pudo enviar whatsapp: ${error.sqlMessage}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
+    }*/
+
+    this.deshabilitarTurnosSolapados(
+      newTurno.peluquera.id_peluquera,
+      moment(newTurno.dia, 'YYYY-MM-DD').format('YYYY-MM-DD'),
+      newTurno.hora,
+      60
+    );
+  }
+
+  horaAminutos(hora: string): number {
+    const [h, m] = hora.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  //Deshabilita turnos que se solapan
+  async deshabilitarTurnosSolapados(
+    peluqueraId: number,
+    dia: string,
+    horaReservada: string, // "07:00"
+    duracionMinutos = 60,
+  ) {
+    const inicio = this.horaAminutos(horaReservada);
+    const fin = inicio + duracionMinutos;
+    const anteriores = inicio - duracionMinutos;
+    const diaSemana = moment(dia, 'YYYY-MM-DD').day();
+
+    // 1. Traer todos los horarios de esa peluquera y día
+    const horarios = await this.horarioRepository.find({
+      where: {
+        dia: diaSemana,
+        peluquera: { id_peluquera: peluqueraId },
+      },
+      relations: ['peluquera'],
+    });
+
+    // 2. Filtrar los que se solapan
+    const horariosADeshabilitar = horarios.filter((h) => {
+      const horaMin = this.horaAminutos(h.horario);
+
+      return (
+        (horaMin > inicio && // no incluir el turno reservado
+          horaMin <= fin) ||
+        (horaMin >= anteriores && // turno anterior
+          horaMin < inicio)
+      );
+    });
+
+    // 3. Guardarlos como turnos deshabilitados
+    const turnosDeshabilitados = horariosADeshabilitar.map((h) => {
+      const td = new TurnoDeshabilitado(
+        dia.toString(),
+        h.horario,
+      );
+      td.peluquera = h.peluquera;
+      return td;
+    });
+
+    await this.turnoDeshabilitadoRepository.upsert(
+      turnosDeshabilitados,
+      ['dia', 'hora', 'peluquera'],
+    );
+  }
+
+  //Deshabilita un turno específico
+  async deshabilitarTurno(
+    turno: TurnoDeshabilitado,
+  ) {
+    const td = new TurnoDeshabilitado(
+      turno.dia,
+      turno.hora,
+    );
+    td.peluquera = await this.adminService.getPeluqueraById(turno.peluquera.id_peluquera);
+    console.log('Deshabilitando turno:', td);
+    await this.turnoDeshabilitadoRepository.upsert(
+      td,
+      ['dia', 'hora', 'peluquera'],
+    );
   }
 
   //Devuelve los turnos del día especificado
@@ -130,6 +217,15 @@ export class TurnosService {
       order: { hora: 'ASC' }
     });
     return turnos;
+  }
+
+  //Devuelve los dias y horarios deshabilitados
+  async getTurnosDeshabilitados(dia: string): Promise<TurnoDeshabilitado[]> {
+    const turnosDeshabilitados = await this.turnoDeshabilitadoRepository.find({
+      where: { dia: dia },
+      relations: ['peluquera']
+    });
+    return turnosDeshabilitados;
   }
 
   //Programa tarea para enviar whatsapp de recordatorio de turno un día antes

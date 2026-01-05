@@ -3,6 +3,7 @@ import { TurnosService } from './turnos.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { Turno } from './entities/turno.entity';
+import { TurnoDeshabilitado } from './entities/turnosDeshabilitados.entity';
 
 @Controller('turnos')
 export class TurnosController {
@@ -14,13 +15,6 @@ export class TurnosController {
   ) {
     return this.turnosService.getTurnosDisponibles(day);
   }
-
- /* @Get('/diasNoDisponibles')
-  async getDiasNoDisponibles(
-    @Query('day') day: string,
-  ) {
-    return this.turnosService.getDiasNoDisponibles(day);
-  }*/
 
   /**
    * Devuelve todos los días NO disponibles dentro de un rango de fechas.
@@ -39,7 +33,7 @@ export class TurnosController {
     }
     return this.turnosService.getDiasNoDisponiblesRango(from, to);
   }
-  
+
   @Get('/turnosPorDia/:day')
   async getTurnosPorDia(
     @Param('day') day: string,
@@ -47,9 +41,21 @@ export class TurnosController {
     return this.turnosService.turnosDelDia(day);
   }
 
+  @Get('/turnosDeshabilitados/:day')
+  async getTurnosDeshabilitados(
+    @Param('day') day: string,
+  ) {
+    return this.turnosService.getTurnosDeshabilitados(day);
+  }
+
   @Post()
   create(@Body() newTurno: Turno) {
     return this.turnosService.create(newTurno);
+  }
+
+  @Post('/deshabilitarTurno')
+  deshabilitarTurno(@Body() turno: TurnoDeshabilitado) {
+    return this.turnosService.deshabilitarTurno(turno);
   }
 
   @Delete(':id_turno')
