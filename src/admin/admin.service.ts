@@ -21,8 +21,11 @@ export class AdminService {
     private readonly razaRepository: Repository<Raza>,
   ) { }
 
-  findAllPeluqueras() {
-    return this.peluqueraRepository.find({ relations: ['horarios'] });
+  async findAllPeluqueras() {
+    return await this.peluqueraRepository.find({ 
+      relations: ['horarios'],
+      order: { horarios: { dia: 'ASC', horario: 'ASC' } }
+    });
   }
 
   async getAllRazas(): Promise<Raza[]> {
