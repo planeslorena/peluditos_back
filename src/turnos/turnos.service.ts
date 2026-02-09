@@ -37,7 +37,7 @@ export class TurnosService {
     const horarios = await this.horarioRepository.find({
       where: { dia: diaDeLaSemana },
       relations: ['peluquera'],
-      order: { horario: 'ASC' }
+      order: {peluquera: {nombre: 'ASC'}, horario: 'ASC'}
     });
 
     //Traer los turnos ya ocupados para el día especificado
