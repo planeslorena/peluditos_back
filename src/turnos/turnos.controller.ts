@@ -58,6 +58,11 @@ export class TurnosController {
     return this.turnosService.deshabilitarTurno(turno);
   }
 
+  @Delete('/habilitarTurno/:id_turno_deshabilitado')
+  habilitarTurno(@Param('id_turno_deshabilitado') id_turno_deshabilitado: number) {
+    this.turnosService.habilitarTurno(id_turno_deshabilitado);
+  }
+
   @Delete(':id_turno')
   async delete(
     @Param('id_turno', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.BAD_REQUEST, })) id_turno: number): Promise<void> {

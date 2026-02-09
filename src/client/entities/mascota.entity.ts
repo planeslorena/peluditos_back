@@ -9,7 +9,7 @@ export class Mascota {
   })
   public id_mascota: number;
 
-    @Column({
+  @Column({
     name: 'num_mascota',
     type: 'int',
     nullable: true,
@@ -29,6 +29,13 @@ export class Mascota {
     nullable: false,
   })
   public edad: number;
+
+  @Column({
+    name: 'tipo_edad',
+    length: 10,
+    nullable: false,
+  })
+  public tipo_edad: string;
 
   @Column({
     name: 'raza',

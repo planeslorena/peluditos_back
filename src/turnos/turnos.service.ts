@@ -106,7 +106,7 @@ export class TurnosService {
     }
 
     //Suspención de envio de whatsapp de confirmación a pedido del cliente (02/01/2026)
-    /*
+    //Habilitacion de envio de whatsapp de confirmación (09/02/2026)
     try {
       const mascotaCliente = await this.clientService.getClientByIdMascota(newTurno.mascota.id_mascota);
       const peluquera = await this.adminService.getPeluqueraById(newTurno.peluquera.id_peluquera);
@@ -129,7 +129,7 @@ export class TurnosService {
         `Turno creado, no se pudo enviar whatsapp: ${error.sqlMessage}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }*/
+    }
 
     this.deshabilitarTurnosSolapados(
       newTurno.peluquera.id_peluquera,
@@ -207,6 +207,20 @@ export class TurnosService {
       td,
       ['dia', 'hora', 'peluquera'],
     );
+  }
+
+  //Habilita un turno específico
+  async habilitarTurno(
+    id_turno_deshabilitado: number,
+  ) {
+    try {
+      await this.turnoDeshabilitadoRepository.delete(id_turno_deshabilitado);
+    } catch (error) {
+      throw new HttpException(
+        `Error eliminando turno deshabilitado: ${error.sqlMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   //Devuelve los turnos del día especificado
