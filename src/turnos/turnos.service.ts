@@ -3,7 +3,7 @@ import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Turno } from './entities/turno.entity';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import * as moment from 'moment';
 import { Horario } from 'src/admin/entities/horarios.entity';
 import { ClientService } from 'src/client/client.service';
@@ -37,7 +37,7 @@ export class TurnosService {
     const horarios = await this.horarioRepository.find({
       where: { dia: diaDeLaSemana },
       relations: ['peluquera'],
-      order: {peluquera: {nombre: 'ASC'}, horario: 'ASC'}
+      order: { peluquera: { nombre: 'ASC' }, horario: 'ASC' }
     });
 
     //Traer los turnos ya ocupados para el día especificado
@@ -107,6 +107,8 @@ export class TurnosService {
 
     //Suspención de envio de whatsapp de confirmación a pedido del cliente (02/01/2026)
     //Habilitacion de envio de whatsapp de confirmación (09/02/2026)
+    //Suspención de envio de whatsapp de confirmación a pedido del cliente (04/03/2026)
+    /*
     try {
       const mascotaCliente = await this.clientService.getClientByIdMascota(newTurno.mascota.id_mascota);
       const peluquera = await this.adminService.getPeluqueraById(newTurno.peluquera.id_peluquera);
@@ -129,7 +131,7 @@ export class TurnosService {
         `Turno creado, no se pudo enviar whatsapp: ${error.sqlMessage}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
+    }*/
 
     this.deshabilitarTurnosSolapados(
       newTurno.peluquera.id_peluquera,
@@ -229,6 +231,27 @@ export class TurnosService {
       where: { dia: dia },
       relations: ['mascota', 'mascota.duenio', 'peluquera'],
       order: { hora: 'ASC' }
+    });
+    return turnos;
+  }
+
+  //Devuelve los turnos asociados al DNI del cliente
+  async turnosPorDni(dni: number): Promise<Turno[]> {
+
+    const duenio = await this.clientService.getClientbyDni(dni);
+    if (!duenio) {
+      throw new HttpException(
+        `No se encontró un dueño con DNI: ${dni}`,
+        HttpStatus.NOT_FOUND
+      );
+    }
+    const turnos = await this.turnosRepository.find({
+      relations: ['mascota', 'mascota.duenio', 'peluquera'],
+      where: {
+        mascota: { duenio: duenio },
+        dia: MoreThanOrEqual(moment(new Date()).format('YYYY-MM-DD'))
+      },
+      order: { dia: 'ASC', hora: 'ASC' }
     });
     return turnos;
   }

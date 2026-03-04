@@ -41,6 +41,13 @@ export class TurnosController {
     return this.turnosService.turnosDelDia(day);
   }
 
+  @Get('/:dni')
+  async getTurnosPorDni(
+    @Param('dni') dni: number,
+  ) {
+    return this.turnosService.turnosPorDni(dni);
+  }
+
   @Get('/turnosDeshabilitados/:day')
   async getTurnosDeshabilitados(
     @Param('day') day: string,
