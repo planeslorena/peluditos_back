@@ -23,7 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       database: process.env.MYSQL_DB,
       synchronize: true,
       entities: ['dist/**/*.entity.js'],
-      logging: 'all',
+      logging: ['error','warn'],
     }),
     ScheduleModule.forRoot(),
     ClientModule,

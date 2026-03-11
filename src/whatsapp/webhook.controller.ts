@@ -24,8 +24,9 @@ export class WhatsAppWebhookController {
 
   // ✅ Recepción de eventos (mensajes y estados)
   @Post()
-  receiveUpdates(@Body() body) {
+  receiveUpdates(@Body() body, @Res() res: Response) {
     console.log('📩 Evento recibido desde Meta:', JSON.stringify(body, null, 2));
+    res.sendStatus(200); 
 
     if (body.object) {
       body.entry.forEach((entry) => {
