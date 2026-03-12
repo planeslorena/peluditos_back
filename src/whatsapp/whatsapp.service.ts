@@ -105,7 +105,8 @@ export class WhatsappService {
            // this.logger.debug('WhatsApp API Response:', response.data);
             return {
                 success: true,
-                data: response.data
+                to: request.to,
+                messageId: response.data?.messages?.[0]?.id || null,
             };
 
         } catch (error) {

@@ -266,24 +266,25 @@ export class TurnosService {
   }
 
   //Programa tarea para enviar whatsapp de recordatorio de turno un día antes
-  @Cron('0 0 17 * * 1-7')
-  async recordarTurnos() {
-    this.logger.log('Tarea de recordatorio de turnos iniciada');
-    //Lógica para obtener los turnos del día siguiente
-    const tomorrow = moment().add(1, 'day').format('YYYY-MM-DD');
-    const turnos = await this.turnosDelDia(tomorrow);
-    //Enviar recordatorio por cada turno
-    turnos.forEach(turno => {
-      this.whatsappService.prepareMessageRecordatorio(turno.mascota, turno)
-        .then(message => this.whatsappService.sendMessage(message))
-        .then(response => {
-          console.log('WhatsApp message sent successfully:', response);
-        })
-        .catch(error => {
-          console.error('Error sending WhatsApp message:', error);
-        });
-    });
-  }
+    @Cron('0 0 17 * * 1-7')
+
+    async recordarTurnos() {
+      this.logger.log('Tarea de recordatorio de turnos iniciada');
+      //Lógica para obtener los turnos del día siguiente
+      const tomorrow = moment().add(1, 'day').format('YYYY-MM-DD');
+      const turnos = await this.turnosDelDia(tomorrow);
+      //Enviar recordatorio por cada turno
+      turnos.forEach(turno => {
+        this.whatsappService.prepareMessageRecordatorio(turno.mascota, turno)
+          .then(message => this.whatsappService.sendMessage(message))
+          .then(response => {
+            console.log('WhatsApp message sent successfully:', response);
+          })
+          .catch(error => {
+            console.error('Error sending WhatsApp message:', error);
+          });
+      });
+    }
 
   async delete(id_turno: number): Promise<void> {
     try {
